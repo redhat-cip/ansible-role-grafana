@@ -16,6 +16,7 @@
 
 ---
 - name: restart-grafana-server
+  become: True
   service:
     name: grafana-server
     state: restarted

@@ -16,6 +16,7 @@
 
 ---
 - name: Import grafana repository GPG keys
+  become: True
   rpm_key:
     key: '{{ item }}'
   with_items:
@@ -23,11 +24,13 @@
     - https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
 
 - name: Install grafana repository
+  become: True
   copy:
     src: grafana.repo
     dest: /etc/yum.repos.d/grafana.repo
 
 - name: Install grafana
+  become: True
   package:
     name: grafana
 
@@ -51,6 +54,7 @@
 #   notify: restart-grafana-server
 
 - name: Start grafana-server service
+  become: True
   service:
     name: grafana-server
     state: started
