@@ -15,8 +15,8 @@
 # under the License.
 
 ---
-- name: restart-grafana-server
+- name: grafana-restart
   become: True
   service:
-    name: grafana-server
+    name: '{{ grafana_service_name }}'
     state: restarted

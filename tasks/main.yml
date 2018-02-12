@@ -15,47 +15,32 @@
 # under the License.
 
 ---
-- name: Import grafana repository GPG keys
-  become: True
-  rpm_key:
-    key: '{{ item }}'
-  with_items:
-    - https://packagecloud.io/gpg.key
-    - https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+- name: Incluse OS-specific variables
+  include_vars: '{{ ansible_os_family  }}.yml'
 
-- name: Install grafana repository
-  become: True
-  copy:
-    src: grafana.repo
-    dest: /etc/yum.repos.d/grafana.repo
+- name: Include RPM-based repo (when necessary)
+  include_tasks: CentOS/rpm-based-repo.yml
+  when: ansible_distribution == 'CentOS'
 
-- name: Install grafana
+- name: Ensure grafana is installed
   become: True
   package:
-    name: grafana
+    name: '{{ grafana_package_name }}'
 
-# - name: Configure grafana server section
-#   ini_file:
-#     dest: /etc/grafana/grafana.ini
-#     section: '{{ item.section }}'
-#     option: '{{ item.option }}'
-#     value: '{{ item.value }}'
-#     backup: yes
-#   with_items:
-#     - { section: 'server', option: 'protocol', value: '{{ grafana_server_protocol }}' }
-#     - { section: 'server', option: 'http_addr', value: '{{ grafana_server_http_addr }}' }
-#     - { section: 'server', option: 'http_port', value: '{{ grafana_server_http_port }}' }
-#     - { section: 'security', option: 'admin_user', value: '{{ grafana_security_admin_user }}' }
-#     - { section: 'security', option: 'admin_password', value: '{{ grafana_security_admin_password }}' }
-#     - { section: 'users', option: 'allow_sign_up', value: 'false' }
-#     - { section: 'users', option: 'allow_org_create', value: 'false' }
-#     - { section: 'auth.anonymous', option: 'enabled', value: 'true' }
-#     - { section: 'auth.anonymous', option: 'allow_org_create', value: 'false' }
-#   notify: restart-grafana-server
+- name: Ensure start-up configuration is set
+  become: True
+  ini_file:
+    dest: '{{ grafana_config_path }}'
+    section: '{{ item.section }}'
+    option: '{{ item.option }}'
+    value: '{{ item.value }}'
+    backup: yes
+  with_items: '{{ grafana_configs }}'
+  notify: grafana-restart
 
 - name: Start grafana-server service
   become: True
   service:
-    name: grafana-server
+    name: '{{ grafana_service_name }}'
     state: started
     enabled: yes
