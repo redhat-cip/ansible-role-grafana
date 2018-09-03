@@ -38,6 +38,25 @@
   with_items: '{{ grafana_configs }}'
   notify: grafana-restart
 
+- name: Ensure the dashboard provisioning directory exists
+  become: True
+  file:
+    path: '{{ grafana_config_path | dirname }}/provisioning/dashboards'
+    state: directory
+    owner: root
+    group: grafana
+    mode: '0750'
+
+- name: Create a default dashboard provisioning file
+  become: True
+  copy:
+    src: files/provisioning-dashboards-default.yml
+    dest: '{{ grafana_config_path | dirname }}/provisioning/dashboards/default.yml'
+    owner: root
+    group: grafana
+    mode: '0644'
+  notify: grafana-restart
+
 - name: Start grafana-server service
   become: True
   service:
