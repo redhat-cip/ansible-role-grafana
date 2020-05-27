@@ -17,10 +17,7 @@
 - name: Import GPG keys
   become: True
   rpm_key:
-    key: '{{ item }}'
-  with_items:
-    - https://packagecloud.io/gpg.key
-    - https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    key: https://packages.grafana.com/gpg.key
 
 - name: Have the grafana repo configured
   become: True
