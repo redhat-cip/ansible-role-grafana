@@ -15,13 +15,13 @@
 
 ---
 - name: Import GPG keys
-  become: True
-  rpm_key:
+  become: true
+  ansible.builtin.rpm_key:
     key: https://packages.grafana.com/gpg.key
 
 - name: Have the grafana repo configured
-  become: True
-  copy:
+  become: true
+  ansible.builtin.copy:
     src: grafana.repo
     dest: /etc/yum.repos.d/grafana.repo
-
+    mode: 0644

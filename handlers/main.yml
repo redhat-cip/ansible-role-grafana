@@ -15,8 +15,8 @@
 # under the License.
 
 ---
-- name: grafana-restart
-  become: True
-  service:
+- name: Grafana-restart
+  become: true
+  ansible.builtin.service:
     name: '{{ grafana_service_name }}'
     state: restarted
